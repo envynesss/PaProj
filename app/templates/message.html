@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>航班信息</title>
+    {% comment %}<link href="/static/css/bootstrap.min.css" rel="stylesheet">{% endcomment %}
+    <link href="/static/css/bootstrap-cerulean.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-select.min.css" rel="stylesheet">
+    <link href="/static/css/charisma-app.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="/static/img/star-on.png">
+</head>
+<body>
+<!-- topbar starts -->
+<div class="navbar navbar-default" role="navigation">
+    <div class="navbar-inner">
+        <img class="navbar-left" src="/static/img/neu-logo.png"/>
+        <a class="navbar-header"><h3 style="color: white">&emsp;东北大学-京东生鲜项目管理系统</h3></a>
+    </div>
+</div>
+<!-- topbar ends -->
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-lg-12 ">
+            <!--左边查询栏start-->
+            <div class="col-xs-3 col-sm-3 col-lg-3">
+                <div class="row">
+                    <div class="well col-md-12 center ">
+                        <div class="alert alert-info">
+                            国内航班查询
+                        </div>
+                        <form class="form-horizontal" method="post">
+                            <fieldset>
+                                <div class="form-group ">
+                                    <label for="homecity_name">出发城市：</label>
+                                    <input type="text" id="homecity_name" name="homecity_name" required="true" mod="address|notice" mod_address_source="hotel" mod_address_suggest="@Beijing|北京|53@Shanghai|上海|321@Shenzhen|深圳|91@Guangzhou|广州|80@Qingdao|青岛|292@Chengdu|成都|324@Hangzhou|杭州|383@Wuhan|武汉|192@Tianjin|天津|343@Dalian|大连|248@Xiamen|厦门|61@Chongqing|重庆|394@" placeholder="中文/拼音" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="getcity_name">目的城市：</label>
+                                    <input type="text" id="getcity_name" name="getcity_name" required="true" mod="address|notice" mod_address_source="hotel" mod_address_suggest="@Beijing|北京|53@Shanghai|上海|321@Shenzhen|深圳|91@Guangzhou|广州|80@Qingdao|青岛|292@Chengdu|成都|324@Hangzhou|杭州|383@Wuhan|武汉|192@Tianjin|天津|343@Dalian|大连|248@Xiamen|厦门|61@Chongqing|重庆|394@" placeholder="中文/拼音" />
+                                </div>
+
+                                <div class="form-group date">
+                                    <label for="depart_date">出发日期：</label>
+                                    <input type="text" id="depart_date" required="true" placeholder="出发日期">
+                                </div>
+
+                                <div class="form-group datepicker" >
+                                    <label for="end_time">最晚时间：</label>
+                                    <input type="text" id="end_time" required="true" placeholder="最晚时间">
+                                </div>
+
+                                <div class="form-group " >
+                                    <label for="selectSubject">项目名称：</label>
+                                    <select class="selectpicker" id="selectSubject" title="项目名称">
+                                        <option value="大连草莓">大连草莓</option>
+                                        <option value="丹东樱桃">丹东樱桃</option>
+                                        <option value="沈阳苹果">沈阳苹果</option>
+                                        <option value="丹东蚬子">丹东蚬子</option>
+                                        <option value="东北姑娘果">东北姑娘果</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group " >
+                                    <label for="">筛选优先级：</label>
+                                    <input type="checkbox" name="priority" id="ckbox_cost" value="成本性">成本性&ensp;
+                                    <input type="checkbox" name="priority" id="ckbox_effect" value="时效性">实效性&ensp;
+                                    <input type="checkbox" name="priority" id="ckbox_late_rate" value="晚点率">晚点率&ensp;
+                                </div>
+
+                                <div class="center col-md-5">
+                                    <button type="button" class="btn btn-primary" id="btn_submit">搜索航班</button>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div><!--/row-->
+
+                 <div id="jsContainer" class="jsContainer" style="height:0">
+                    <div id="tuna_alert" style="display:none;position:absolute;z-index:999;overflow:hidden;"></div>
+                    <div id="tuna_jmpinfo" style="visibility:hidden;position:absolute;z-index:120;"></div>
+                </div>
+            </div>
+            <!--左边查询栏end-->
+
+            <!--右边内容栏start-->
+            <div id="content" class="col-xs-9 col-lg-9 col-sm-9">
+            <!-- content starts -->
+                <div class="row">
+                    <div class="box col-md-12">
+                        <!--右边上部筛选条件栏start-->
+                        <div class="breadcrumb">
+                            <li><h5>筛选条件</h5></li>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>项目名称：</th>
+                                    <td id="td_subject"></td>
+                                    <th>筛选优先级：</th>
+                                    <td id="td_priority"></td>
+                                    <th>最晚时间</th>
+                                    <td id="td_end_time"></td>
+                                </tr>
+                                <tr>
+                                    <th>出发城市：</th>
+                                    <td id="td_depart_city"></td>
+                                    <th>到达城市：</th>
+                                    <td id="td_arrive_city"></td>
+                                    <th>出发日期：</th>
+                                    <td id="td_depart_date"></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <!--右边上部筛选条件栏end-->
+
+                        <!--右边下部信息栏start-->
+                        <div class="box-inner">
+                            <div class="box-header well" data-original-title="">
+                                <h2>航班信息</h2>
+                            </div>
+                            <div class="box-content">
+                                <table id="tb_info" class="table table-bordered table-striped table-condensed ">
+                                    <!--表头start-->
+                                    <thead>
+                                    <tr>
+                                        <!--<th>为表头-->
+                                        <th>航班号</th>
+                                        <th>出发城市机场</th>
+                                        <th>出发时间</th>
+                                        <th>到达城市机场</th>
+                                        <th>到达时间</th>
+                                        <th>价格</th>
+                                        <th>晚点率</th>
+                                    </tr>
+                                    </thead>
+                                    <!--表头end-->
+
+                                    <!--表体start-->
+                                    <tbody id="message_body">
+                                    <!--内部数据由ajak获取，js传回页面-->
+                                    </tbody>
+                                    <!--表体end-->
+                                </table>
+                            </div>
+                        </div>
+                        <!--右边下部信息栏end-->
+
+                    </div>
+                </div><!--/row-->
+            <!-- content ends -->
+            </div><!--/#content.col-md-9-->
+            <!--右边内容栏end-->
+        </div>
+    </div><!--/row-->
+</div><!--/.fluid-container-->
+
+<footer class="row">
+        <p class="col-md-9 col-sm-9 col-xs-12 copyright">&copy; <a href="#" target="_blank">NEU-ISE</a>&ensp;2018 - 2028 &emsp;Powered by: A NEUER</p>
+</footer>
+
+<script type="text/javascript" src="/static/js/fixdiv.js"></script>
+<script type="text/javascript" src="/static/js/address.js"></script>
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-datepicker.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-datepicker.zh-CN.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-datetimepicker.zh-CN.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-select.js"></script>
+
+<script type="text/javascript">
+    $(function(){
+        var date = new Date();
+
+        $('#depart_date').datepicker({
+            language: "zh-CN",
+            format: "yyyy-mm-dd",
+            todayBtn: "linked",
+            clearBtn: true,
+            orientation: "auto",
+            autoclose: true,
+            startDate: date,
+            todayHighlight: true
+        });
+
+        $('#end_time').datetimepicker({
+            language: "zh-CN",
+            format: "yyyy-mm-dd hh:ii:00",
+            starView: 0,
+            todayBtn: "linked",
+            clearBtn: true,
+            orientation: "auto",
+            autoclose: true,
+            startDate: date,
+            todayHighlight: true
+        });
+    });
+
+    /**
+     * id为btn_submit的搜索航班按钮的点击事件，执行1和2         *
+     */
+    $('#btn_submit').click(function(){
+        // 检查查询条件是否合法的函数;
+        if(input_valid()){
+            // 1 ： 把左边搜索框里面的信息传给右面上部筛选信息表格里
+            var priority = document.getElementsByName('priority');
+            var select_priority ='';
+            for(var i = 0; i < priority.length; i++){
+                if(priority[i].checked) select_priority += priority[i].value+' ';  //如果选中，将value添加到变量s中
+            }
+
+            $('#td_subject').html($('#selectSubject').val()); // 把id为selectSubject下拉框里面的项目值赋值给id为td_subject的表格
+            $('#td_priority').html(select_priority);
+            $('#td_depart_city').html($('#homecity_name').val());
+            $('#td_arrive_city').html($('#getcity_name').val());
+            $('#td_depart_date').html($('#depart_date').val());
+            $('#td_end_time').html($('#end_time').val());
+            // 2 ： 把把左边搜索框里面的信息通过post传给后台views
+            data_process(select_priority);
+        }
+    });
+
+    function data_process(select_priority){
+        $('#message_body').html("");
+        var params = {
+            depart_city: $('#homecity_name').val(),
+            arrive_city: $('#getcity_name').val(),
+            depart_date: $('#depart_date').val(),
+            end_time: $('#end_time').val(),
+            subject: $('#selectSubject').val(),
+            priority: select_priority,
+            {% comment %}ckbox_cost: $('ckbox_cost input[name=priority]:checked'),
+            ckbox_effect: $('ckbox_effect input[name=priority]:checked'),
+            ckbox_late_rate: $('ckbox_late_rate input[name=priority]:checked'),{% endcomment %}
+        };
+
+        $.ajax({
+            type : 'POST',
+            url : '/message/',
+            data : params,
+            //数据返回成功的话，进入success
+            success : function (data) {
+                dat = JSON.parse(data); // {'list_all': list_all}
+                for(var i = 0; i < dat.list_all.length; i++){
+                    //dat.list_all[0] : 990,宝安国际机场T3,2018-05-25 06:40:00,虹桥国际机场T2,2018-05-25 08:50:00,950,宝安国际机场T3,2018-05-25 07:15:00,浦东国际
+                    var $tr = $("<tr></tr>");
+                    for(var j = 0; j < dat.list_all[i].length; j++){
+                        // 循环每一条信息 把信息付给<td>格子
+                        $td = $("<td></td>");
+                        $td.html(dat.list_all[i][j]);
+                        $tr.append($td);
+                    }
+                    $("#message_body").append($tr);
+                }
+            },
+            //数据返回失败的话，进入error
+            error : function () {
+                alert("查询不到信息，稍后重试");
+            }
+        });
+    }
+
+    function input_valid(){
+        if($('#homecity_name').val()==''){
+            alert("请选择出发城市");
+            return false;
+        }
+        if($('#getcity_name').val()==''){
+            alert("请选择到达城市");
+            return false;
+        }
+        if($('#depart_date').val()==''){
+            alert("请选择出发日期");
+            return false;
+        }
+        return true;
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/app/static/css/bootstrap-datepicker3.min.css" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/static/css/bootstrap-datepicker3.min.css.map" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/static/js/address.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/static/js/bootstrap-datepicker.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/static/js/bootstrap-datepicker.min.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/static/js/bootstrap-datepicker.zh-CN.min.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/static/js/fixdiv.js" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/chromedriver.exe" charset="UTF-8" />
+  </component>
+</project>
